@@ -1,4 +1,6 @@
 import random
+import sys
+
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
@@ -31,7 +33,17 @@ class LearningAgent(Agent):
         self.len_qvals = 0             
         
         self.ai = None
-        self.ai = qlearn.QLearn(actions=self.actions, alpha=0.0, gamma=0.0, epsilon=0.0)
+
+        if (sys.argv.count == 4):
+            alpha = sys.argv[1]
+            gamma = sys.argv[2]
+            epsilon = sys.argv[3]
+        else:
+            alpha = 0.8
+            gamma = 0.6
+            epsilon = 0.0 
+
+        self.ai = qlearn.QLearn(actions=self.actions, alpha=alpha, gamma=gamma, epsilon=epsilon)
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
@@ -110,5 +122,6 @@ if __name__ == '__main__':
     df_results.columns = ['reward_sum', 'disc_reward_sum', 'n_dest_reached',
                               'last_dest_fail', 'sum_time_left', 'n_penalties',
                               'last_penalty', 'len_qvals']
-    print df_results
-    # df_results.to_csv('original_agent_results.csv')
+    # print df_results.describe()
+    # df_results.to_csv('results.csv')
+    df_results.describe().transpose().to_csv('results.csv', mode='a',sep='\t')
